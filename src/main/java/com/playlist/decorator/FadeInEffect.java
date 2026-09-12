@@ -1,28 +1,37 @@
 package com.playlist.decorator;
+import java.util.Locale;
 
-/**
- * Efeito que aplica uma rampa linear de volume nas primeiras amostras.
- */
 public final class FadeInEffect extends AudioEffect {
 
-  /**
-   * Cria o efeito de fade in.
-   *
-   * @param wrapped áudio decorado.
-   * @param sampleCount quantidade de amostras usadas na rampa.
-   */
+  private final int sampleCount;
+
   public FadeInEffect(AudioTrack wrapped, int sampleCount) {
     super(wrapped);
-    throw new UnsupportedOperationException("Exercício 4: implemente o construtor de FadeInEffect");
+    this.sampleCount = sampleCount;
   }
 
   @Override
   protected String describe() {
-    throw new UnsupportedOperationException("Exercício 4: implemente FadeInEffect.describe");
+    return String.format(Locale.ROOT, "fadeIn(%d)", sampleCount);
   }
 
   @Override
   public double[] getSamples() {
-    throw new UnsupportedOperationException("Exercício 4: implemente FadeInEffect.getSamples");
+      double[] samples = wrapped.getSamples();
+
+      if (sampleCount <= 0) {
+          return samples;
+      }
+
+      double[] newSamples = new double[samples.length];
+      for (int i = 0; i < samples.length; i++) {
+          if (i < sampleCount) {
+              newSamples[i] = samples[i] * ((double) i / sampleCount);
+          } else {
+              newSamples[i] = samples[i];
+          }
+      }
+
+      return newSamples;
   }
 }

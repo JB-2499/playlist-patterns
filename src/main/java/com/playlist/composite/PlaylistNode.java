@@ -1,82 +1,87 @@
 package com.playlist.composite;
 
-
 import com.playlist.core.Track;
 import java.util.List;
+import java.util.ArrayList;
 
-/**
- * Composite do padrão Composite: uma playlist que pode conter faixas e outras playlists.
- */
 public class PlaylistNode implements MediaItem {
 
-  /**
-   * Cria uma playlist vazia.
-   *
-   * @param name nome da playlist. Não pode ser nulo nem em branco.
-   * @throws IllegalArgumentException se o nome for nulo ou em branco.
-   */
+  private String name;
+  private List<MediaItem> children = new ArrayList<>();
+
   public PlaylistNode(String name) {
-    throw new UnsupportedOperationException("Requisito 1: implemente o construtor de PlaylistNode");
+    if (name == null || name.isEmpty()) {
+      throw new IllegalArgumentException("O nome não pode estar vazio");
+    }
+    this.name = name;
   }
 
-  /**
-   * Adiciona um item ao final da playlist.
-   *
-   * @param item item a ser adicionado.
-   * @return a própria playlist, permitindo encadear chamadas.
-   * @throws IllegalArgumentException se o item for nulo, for a própria playlist ou contiver a própria playlist (o que criaria um ciclo).
-   */
   public PlaylistNode add(MediaItem item) {
-    throw new UnsupportedOperationException("Requisito 1: implemente PlaylistNode.add");
+    if (item == null || item == this || (item instanceof PlaylistNode && ((PlaylistNode) item).contains(this))) {
+      throw new IllegalArgumentException("item não pode ser nulo, a própria playlist ou conter a própria playlist");
+    }
+
+    this.children.add(item);
+
+    return this;
   }
 
-  /**
-   * Remove um filho direto da playlist.
-   *
-   * @param item item a ser removido.
-   * @return {@code true} se o item era filho direto e foi removido.
-   */
   public boolean remove(MediaItem item) {
-    throw new UnsupportedOperationException("Requisito 1: implemente PlaylistNode.remove");
+    return children.remove(item);
   }
 
-  /**
-   * Lista os filhos diretos da playlist.
-   *
-   * @return uma lista imutável com os filhos, na ordem de inserção.
-   */
   public List<MediaItem> getChildren() {
-    throw new UnsupportedOperationException("Exercício 1: implemente PlaylistNode.getChildren");
+    return List.copyOf(children);
   }
 
-  /**
-   * Verifica se o item está em qualquer nível abaixo desta playlist.
-   *
-   * @param item item procurado.
-   * @return {@code true} se o item for filho direto ou descendente.
-   */
   public boolean contains(MediaItem item) {
-    throw new UnsupportedOperationException("Requisito 1: implemente PlaylistNode.contains");
+    for (MediaItem child : children) {
+      if (child == item) {
+        return true;
+      }
+      if (child instanceof PlaylistNode && ((PlaylistNode) child).contains(item)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
   public String getName() {
-    throw new UnsupportedOperationException("Exercício 1: implemente PlaylistNode.getName");
+    return this.name;
   }
+
 
   @Override
   public int getDurationSeconds() {
-    throw new UnsupportedOperationException(
-            "Exercício 1: implemente PlaylistNode.getDurationSeconds");
+    int totalDuration = 0;
+
+    for (MediaItem child : children) {
+      totalDuration += child.getDurationSeconds();
+    }
+
+    return totalDuration;
   }
 
   @Override
   public int getTrackCount() {
-    throw new UnsupportedOperationException("Exercício 1: implemente PlaylistNode.getTrackCount");
+    int totalCount = 0;
+
+    for (MediaItem child : children) {
+      totalCount += child.getTrackCount();
+    }
+    
+    return totalCount;
   }
 
   @Override
   public List<Track> flatten() {
-    throw new UnsupportedOperationException("Exercício 1: implemente PlaylistNode.flatten");
+    List<Track> tracks = new ArrayList<>();
+
+    for (MediaItem child : children) {
+      tracks.addAll(child.flatten());
+    }
+
+    return tracks;
   }
 }

@@ -4,12 +4,6 @@ import com.playlist.core.Track;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Alvo (Target) do padrão Adapter: a interface de catálogo que Playlist usa internamente.
- *
- * <p>Todo o restante do sistema depende apenas desta interface — nunca do
- * formato do sistema legado.</p>
- */
 public interface TrackCatalog {
 
   /**
